@@ -28,7 +28,8 @@ You'll probably want stuff to be persistant between container rebuilds, so we've
 ## Tags
 We'll automatically build a new tag every time a new beta or release candidate is released. If you'd like nightlies as well, please contact us, and I'll work it into our build scripts.
 
-* `stable` tracks the latest stable release of OpenTTD.
-* `rc` tracks the latest release candidate of OpenTTD, falling back to the latest stable if it's newer.
-* `beta` tracks the latest beta release of OpenTTD, falling back to, you guessed it, the latest release candidate or stable if a newer one is available.
 * `latest` currently tracks `stable`, but this may change in future to track nightly releases.
+* `stable` tracks the latest stable release of OpenTTD.
+* `testing` tracks the latest release candidate or beta build of OpenTTD, falling back to the latest stable if it's newer.
+
+The build scripts are also set up to also tag with the version number, in case you want to pin to a specific version: check the tags for a full lineup.
