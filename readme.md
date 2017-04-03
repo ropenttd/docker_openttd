@@ -1,7 +1,8 @@
 # OpenTTD in Docker
 __An image brought to you by /r/openttd__
 
-Built with Alpine Linux and from OpenTTD source to provide the leanest, meanest container you'll come across for putting trainsets in containers.
+Built from OpenTTD source to provide the leanest, meanest container you'll come across for putting trainsets in containers.
+
 
 ## Using this Container
 ```
@@ -28,8 +29,11 @@ You'll probably want stuff to be persistant between container rebuilds, so we've
 ## Tags
 We'll automatically build a new tag every time a new beta or release candidate is released. If you'd like nightlies as well, please contact us, and I'll work it into our build scripts.
 
-* `latest` currently tracks `stable`, but this may change in future to track nightly releases.
 * `stable` tracks the latest stable release of OpenTTD.
-* `testing` tracks the latest release candidate or beta build of OpenTTD, falling back to the latest stable if it's newer.
+* `rc` tracks the latest release candidate of OpenTTD, falling back to the latest stable if it's newer.
+* `beta` tracks the latest beta release of OpenTTD, falling back to, you guessed it, the latest release candidate or stable if a newer one is available.
+* `latest` currently tracks `stable`, but this may change in future to track nightly releases.
 
-The build scripts are also set up to also tag with the version number, in case you want to pin to a specific version: check the tags for a full lineup.
+## Alpine, OpenTTD, and You
+
+This repo contains a dockerfile for building against Alpine Linux. However, if you try to run a server with openttd compiled on alpine, you’ll get a segmentation fault in saveload as soon as a client tries to connect. From what I’m aware, this is due to a quirk in musl-libc, so at present we’re stuck with using Debian (attempts have been made to shoehorn glibc into alpine with no success). If you succeed at getting OpenTTD to run and serve players with an alpine-derived image, please let us know!
