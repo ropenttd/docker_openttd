@@ -1,7 +1,7 @@
 FROM debian:latest
 MAINTAINER Andrew Leach <me@duck.me.uk>
 
-ARG OPENTTD_VERSION=“1.7.0”
+ARG OPENTTD_VERSION="1.7.2"
 ARG OPENGFX_VERSION="0.5.2"
 
 # Get things ready
