@@ -1,8 +1,8 @@
 FROM debian:latest
 MAINTAINER Andrew Leach <me@duck.me.uk>
 
-ARG OPENTTD_VERSION="1.7.2"
-ARG OPENGFX_VERSION="0.5.2"
+ARG OPENTTD_VERSION="1.8.0"
+ARG OPENGFX_VERSION="0.5.4"
 
 # Get things ready
 RUN mkdir -p /config \
@@ -14,33 +14,40 @@ RUN mkdir -p /config \
 RUN apt-get update && \
     apt-get install -y \
     unzip \
+    wget \
+    git \
     g++ \
     make \
     patch \
-    subversion \
     zlib1g-dev \
     liblzma-dev \
     liblzo2-dev \
     pkg-config
 
 # Build OpenTTD itself
-RUN svn checkout svn://svn.openttd.org/tags/${OPENTTD_VERSION} /tmp/build
 WORKDIR /tmp/build
+
+RUN git clone https://github.com/OpenTTD/OpenTTD.git . \
+    && git fetch --tags \
+    && git checkout ${OPENTTD_VERSION}
 
 RUN /tmp/build/configure \
     --enable-dedicated \
     --binary-dir=bin \
     --personal-dir=/ \
     —-enable-debug
-RUN make -j5 \
+
+RUN make -j2 \
     && make install
 
-# Grab OpenGFX as tagged
-ADD https://binaries.openttd.org/extra/opengfx/$OPENGFX_VERSION/opengfx-$OPENGFX_VERSION-all.zip opengfx.zip
-RUN unzip opengfx.zip \
-    && tar -xf opengfx-$OPENGFX_VERSION.tar -C /usr/local/share/games/openttd/baseset/ \
-    && rm -rf opengfx-$OPENGFX_VERSION.tar opengfx.zip
-    
+## Install OpenGFX
+RUN mkdir -p /usr/local/share/games/openttd/baseset/ \
+    && cd /usr/local/share/games/openttd/baseset/ \
+    && wget -q http://bundles.openttdcoop.org/opengfx/releases/${OPENGFX_VERSION}/opengfx-${OPENGFX_VERSION}.zip \
+    && unzip opengfx-${OPENGFX_VERSION}.zip \
+    && tar -xf opengfx-${OPENGFX_VERSION}.tar \
+    && rm -rf opengfx-*.tar opengfx-*.zip
+
 # Add the entrypoint
 ADD entrypoint.sh /usr/local/bin/entrypoint
 
@@ -59,11 +66,12 @@ EXPOSE 3977/tcp
 RUN apt-get remove -y \
     make \
     patch \
-    subversion
+    git \
+    wget
 
 RUN rm -r /tmp/build
 
-# Finally, let's be OpenTTD!
+# Finally, let's run OpenTTD!
 USER openttd
 WORKDIR /config
 CMD /usr/local/bin/entrypoint
