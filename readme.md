@@ -1,7 +1,7 @@
 # OpenTTD in Docker
 __An image brought to you by /r/openttd__
 
-Built from OpenTTD source to provide the leanest, meanest container you'll come across for putting trainsets in containers.
+Built from OpenTTD source to provide the leanest, meanest image you'll come across for putting trainsets in containers.
 
 
 ## Using this Container
@@ -24,7 +24,14 @@ You'll probably want stuff to be persistant between container rebuilds, so we've
 ```
 -v /home/{username}/.openttd:/config:rw
 ```
-**Heads up:** If we can't find an `openttd.cfg` in `/config`, we'll ask OpenTTD to start a new configuration directory there. We strongly recommend that if you're starting fresh, you stop the container and configure openttd.cfg as per [the wiki](https://wiki.openttd.org/Openttd.cfg).
+**Heads up:** If we can't find an `openttd.cfg` in `/config`, we'll attempt to ask OpenTTD to start a new configuration directory there. We strongly recommend that if you're starting fresh, you stop the container and configure openttd.cfg as per [the wiki](https://wiki.openttd.org/Openttd.cfg).
+
+If you don't want the entire `.openttd` directory to be copied to your local FS statically, you may want to consider mounting files / directories directly like so:
+
+```
+-v /home/{username}/.openttd/openttd.cfg:/config/openttd.cfg:ro
+-v /home/{username}/.openttd/save/:/config/save:rw
+```
 
 ## Tags
 We'll automatically build a new tag every time a new beta or release candidate is released. If you'd like nightlies as well, please contact us, and I'll work it into our build scripts.
