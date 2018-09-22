@@ -11,12 +11,12 @@ docker run -d -p 3979:3979/tcp -p 3979:3979/udp redditopenttd/openttd:latest
 
 The container is set by default to start a fresh game every time you restart the container. You can, however, change this behaviour with the `savegame` envvar:
 ```
--e savegame={false|autosave|exit|(savename)}
+-e savegame={false|last-autosave|exit|(savename)}
 ```
 where:
 * false: standard behaviour, just start a new game
-* autosave: load the last chronological autosave
-* exit: try to load exit.sav
+* last-autosave: load the last chronological autosave
+* exit: try to load autosave/exit.sav, otherwise default to a new game
 * (savename): full name of a save file in config/saves
 
 You'll probably want stuff to be persistant between container rebuilds, so we've got the `/config` volume for exactly that purpose.
