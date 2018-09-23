@@ -2,7 +2,7 @@
 
 # This script is based fairly heavily off bateau84/openttd's. Thanks, man!
 savepath="/config/save"
-LOADGAME_CHECK="${loadgame}x"
+LOADGAME_CHECK="${savegame}x"
 
 if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
@@ -19,38 +19,38 @@ if [ ${LOADGAME_CHECK} != "x" ]; then
                     exit 0
                 ;;
                 'last-autosave')
-            		savegame=${savepath}/autosave/`ls -rt ${savepath}/autosave/ | tail -n1`
+            		savegame_target=${savepath}/autosave/`ls -rt ${savepath}/autosave/ | tail -n1`
 
-            		if [ -r ${savegame} ]; then
-                    	echo "Loading from autosave - ${savegame}"
-                        exec /tmp/build/bin/openttd -D -g ${savegame} -x -d ${DEBUG}
+            		if [ -r ${savegame_target} ]; then
+                    	echo "Loading from autosave - ${savegame_target}"
+                        exec /tmp/build/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
                         exit 0
             		else
-                		echo "${savegame} not found..."
+                		echo "${savegame_target} not found..."
                 		exit 1
             		fi
                 ;;
                 'exit')
-            		savegame="${savepath}/autosave/exit.sav"
+            		savegame_target="${savepath}/autosave/exit.sav"
 
-            		if [ -r ${savegame} ]; then
+            		if [ -r ${savegame_target} ]; then
                     	echo "Loading from exit save"
-                        exec /tmp/build/bin/openttd -D -g ${savegame} -x -d ${DEBUG}
+                        exec /tmp/build/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
                         exit 0
             		else
-                		echo "${savegame} not found - Creating a new game."
+                		echo "${savegame_target} not found - Creating a new game."
                 		exec /tmp/build/bin/openttd -D -x -d ${DEBUG}
                     	exit 0
             		fi
                 ;;
                 *)
-                	savegame="${savepath}/${loadgame}"
-                    if [ -f ${savegame} ]; then
-                            echo "Loading ${savegame}"
-                            exec /tmp/build/bin/openttd -D -g ${savegame} -x -d ${DEBUG}
+                	savegame_target="${savepath}/${loadgame}"
+                    if [ -f ${savegame_target} ]; then
+                            echo "Loading ${savegame_target}"
+                            exec /tmp/build/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
                             exit 0
                     else
-                            echo "${savegame} not found..."
+                            echo "${savegame_target} not found..."
                             exit 1
                     fi
                 ;;
