@@ -8,14 +8,14 @@ if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
         # yes this is a horrific hack but whatever
         echo "No config file found: generating one"
-        timeout -t 3 /usr/local/bin/openttd -D > /dev/null 2>&1
+        timeout -t 3 /app/bin/openttd -D > /dev/null 2>&1
 fi
 
 if [ ${LOADGAME_CHECK} != "x" ]; then
         case ${loadgame} in
                 'false')
                 	echo "Creating a new game."
-                    exec /usr/local/bin/openttd -D -x -d ${DEBUG}
+                    exec /app/bin/openttd -D -x -d ${DEBUG}
                     exit 0
                 ;;
                 'last-autosave')
@@ -23,7 +23,7 @@ if [ ${LOADGAME_CHECK} != "x" ]; then
 
             		if [ -r ${savegame_target} ]; then
                     	echo "Loading from autosave - ${savegame_target}"
-                        exec /usr/local/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
+                        exec /app/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
                         exit 0
             		else
                 		echo "${savegame_target} not found..."
@@ -35,11 +35,11 @@ if [ ${LOADGAME_CHECK} != "x" ]; then
 
             		if [ -r ${savegame_target} ]; then
                     	echo "Loading from exit save"
-                        exec /usr/local/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
+                        exec /app/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
                         exit 0
             		else
                 		echo "${savegame_target} not found - Creating a new game."
-                        exec /usr/local/bin/openttd -D -x -d ${DEBUG}
+                		exec /app/bin/openttd -D -x -d ${DEBUG}
                     	exit 0
             		fi
                 ;;
@@ -47,7 +47,7 @@ if [ ${LOADGAME_CHECK} != "x" ]; then
                 	savegame_target="${savepath}/${loadgame}"
                     if [ -f ${savegame_target} ]; then
                             echo "Loading ${savegame_target}"
-                            exec /usr/local/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
+                            exec /app/bin/openttd -D -g ${savegame_target} -x -d ${DEBUG}
                             exit 0
                     else
                             echo "${savegame_target} not found..."
@@ -57,6 +57,6 @@ if [ ${LOADGAME_CHECK} != "x" ]; then
         esac
 else
 		echo "loadgame not set - Creating a new game."
-        exec /usr/local/bin/openttd -D -x -d ${DEBUG}
+    	exec /app/bin/openttd -D -x -d ${DEBUG}
 	    exit 0
 fi
