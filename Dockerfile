@@ -1,7 +1,7 @@
 # BUILD ENVIRONMENT
 FROM debian:latest AS build
 
-ARG OPENTTD_VERSION="1.8.0"
+ARG OPENTTD_VERSION="1.9.1"
 ARG OPENGFX_VERSION="0.5.4"
 
 # Get things ready
@@ -39,7 +39,7 @@ RUN /tmp/src/configure \
 
 RUN make -j"$(nproc)" \
     && make install
-    
+
 # Add the latest graphics files
 ## Install OpenGFX
 RUN mkdir -p /app/data/baseset/ \
@@ -59,14 +59,14 @@ MAINTAINER duck. <me@duck.me.uk>
 
 # Setup the environment and install runtime dependencies
 RUN mkdir -p /config \
-    && useradd -d /config -u 911 -s /bin/false openttd
+    && useradd -d /config -u 911 -s /bin/false openttd \
     && apt-get update \
     && apt-get install -y \
     libc6 \
     zlib1g \
     liblzma5 \
     liblzo2-2
-    
+
 WORKDIR /config
 
 # Copy the game data from the build container
@@ -74,7 +74,7 @@ COPY --from=build /app /app
 
 # Add the entrypoint
 ADD entrypoint.sh /usr/local/bin/entrypoint
-    
+
 # Expose the volume
 RUN chown -R openttd:openttd /config /app
 VOLUME /config
