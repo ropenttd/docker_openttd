@@ -2,7 +2,7 @@
 
 # This script is based fairly heavily off bateau84/openttd's. Thanks, man!
 savepath="/config/save"
-LOADGAME_CHECK="${savegame}x"
+LOADGAME_CHECK="${loadgame}x"
 
 if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
