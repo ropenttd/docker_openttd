@@ -9,9 +9,9 @@ Built from OpenTTD source to provide the leanest, meanest image you'll come acro
 docker run -d -p 3979:3979/tcp -p 3979:3979/udp redditopenttd/openttd:latest
 ```
 
-The container is set by default to start a fresh game every time you restart the container. You can, however, change this behaviour with the `savegame and loadgame` envvar:
+The container is set by default to start a fresh game every time you restart the container. You can, however, change this behaviour with the `loadgame` envvar:
 ```
--e "loadgame=true" -e "savegame={false|last-autosave|exit|(savename)}"
+-e "loadgame={false|last-autosave|exit|(savename)}"
 ```
 where:
 * false: standard behaviour, just start a new game
@@ -36,7 +36,7 @@ The easiest way to play with NewGRF's is to first download and configure them ho
 
 ## An example command to start a server
 ```
-docker run -it -p 3979:3979/tcp -p 3979:3979/udp -v /home/{username}/.openttd:/config:rw -e "loadgame=true" -e "savename=game.sav" redditopenttd/openttd:latest
+docker run -it -p 3979:3979/tcp -p 3979:3979/udp -v /home/{username}/.openttd:/config:rw -e "loadgame=game.sav" redditopenttd/openttd:latest
 ```
 This will start a server with the console accessible due to ```-it``` in the command line, to run in the background use ```-d```.
 
