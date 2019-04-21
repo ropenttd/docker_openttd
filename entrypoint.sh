@@ -16,7 +16,6 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
     'false')
       echo "Creating a new game."
       exec /app/bin/openttd -D -x -d "${DEBUG}"
-      exit 0
       ;;
     'last-autosave')
       savegame_target="${savepath}/autosave/$(ls -rt ${savepath}/autosave/ | tail -n1)"
@@ -24,7 +23,6 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
       if [ -r "${savegame_target}" ]; then
         echo "Loading from autosave - ${savegame_target}"
         exec /app/bin/openttd -D -g "${savegame_target}" -x -d "${DEBUG}"
-        exit 0
       else
         echo "${savegame_target} not found..."
         exit 1
@@ -36,11 +34,9 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
       if [ -r "${savegame_target}" ]; then
         echo "Loading from exit save"
         exec /app/bin/openttd -D -g "${savegame_target}" -x -d "${DEBUG}"
-        exit 0
       else
         echo "${savegame_target} not found - Creating a new game."
         exec /app/bin/openttd -D -x -d "${DEBUG}"
-        exit 0
       fi
       ;;
     *)
@@ -48,7 +44,6 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
       if [ -f "${savegame_target}" ]; then
         echo "Loading ${savegame_target}"
         exec /app/bin/openttd -D -g "${savegame_target}" -x -d "${DEBUG}"
-        exit 0
       else
         echo "${savegame_target} not found..."
         exit 1
@@ -58,5 +53,4 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
 else
   echo "loadgame not set - Creating a new game."
   exec /app/bin/openttd -D -x -d "${DEBUG}"
-  exit 0
 fi
