@@ -18,7 +18,7 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
       exec /app/bin/openttd -D -x -d "${DEBUG}"
       ;;
     'last-autosave')
-      savegame_target="${savepath}/autosave/$(ls -rt ${savepath}/autosave/ | tail -n1)"
+      savegame_target="${savepath}/autosave/$(ls -1rt ${savepath}/autosave/ | tail -n1)"
 
       if [ -r "${savegame_target}" ]; then
         echo "Loading from autosave - ${savegame_target}"
