@@ -1,0 +1,68 @@
+---
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: openttd-server
+  namespace: default
+spec:
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: openttd
+  serviceName: openttd
+  template:
+    metadata:
+      labels:
+        app: openttd
+      name: openttd
+    spec:
+      containers:
+      - args: []
+        env: []
+        image: gauntletwizard/misc:openttd
+        name: openttd
+        ports:
+        - containerPort: 3979
+          name: openttd
+        volumeMounts:
+        - mountPath: /config
+          name: openttd-data
+      securityContext:
+        runAsGroup: 911
+        runAsUser: 911
+      serviceAccountName: openttd
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: openttd-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: openttd-svc
+  name: openttd-svc
+  namespace: default
+spec:
+  ports:
+  - name: game
+    # These two need to be manually set, because otherwise they'll get non-matching ports
+    nodePort: 32573
+    port: 3979
+    protocol: UDP
+    targetPort: 3979
+  - name: gametcp
+    nodePort: 32573
+    port: 3979
+    protocol: TCP
+    targetPort: 3979
+  selector:
+    app: openttd
+  type: NodePort
