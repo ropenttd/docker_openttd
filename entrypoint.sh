@@ -8,7 +8,7 @@ if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
         # yes this is a horrific hack but whatever
         echo "No config file found: generating one"
-        timeout -t 3 /app/bin/openttd -D > /dev/null 2>&1
+        timeout 3 /app/bin/openttd -D > /dev/null 2>&1
 fi
 
 if [ ${LOADGAME_CHECK} != "x" ]; then
