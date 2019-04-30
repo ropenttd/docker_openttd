@@ -76,7 +76,7 @@ COPY --from=build /app /app
 ADD entrypoint.sh /usr/local/bin/entrypoint
 
 # Expose the volume
-RUN chown -R openttd:openttd /config /app
+RUN chown -R openttd:openttd /config /app /usr/local/bin/entrypoint
 VOLUME /config
 
 # Expose the gameplay port
