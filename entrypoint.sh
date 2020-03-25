@@ -3,6 +3,7 @@
 # This script is based fairly heavily off bateau84/openttd's. Thanks, man!
 savepath="/config/save"
 LOADGAME_CHECK="${loadgame}x"
+BANLIST_CHECK="${BAN_LIST}x"
 
 if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
@@ -11,6 +12,10 @@ if [ ! -f /config/openttd.cfg ]; then
         timeout 3 /app/bin/openttd -D > /dev/null 2>&1
 fi
 
+if [ ${BAN_LIST} != "x" ]; then
+        echo "Merging external Ban List from /config/${BAN_LIST}"
+        banread /config/openttd.cfg /config/${BAN_LIST}
+fi
 if [ ${LOADGAME_CHECK} != "x" ]; then
         case ${loadgame} in
                 'false')
@@ -56,7 +61,7 @@ if [ ${LOADGAME_CHECK} != "x" ]; then
                 ;;
         esac
 else
-		echo "loadgame not set - Creating a new game."
+        echo "loadgame not set - Creating a new game."
     	exec /app/bin/openttd -D -x -d ${DEBUG}
-	    exit 0
+        exit 0
 fi

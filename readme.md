@@ -34,11 +34,27 @@ If you don't want the entire `.openttd` directory to be copied to your local FS 
 ```
 The easiest way to play with NewGRF's is to first download and configure them how you want on a local machine with a GUI. Then in the config/ directory copy the folder from local machine named content_downloaded to the server. Next update the openttd.cfg file from your local machine, this is to ensure that when you create a new server your NewGRF settings will be copied across.
 
-## An example command to start a server
+### An example command to start a server
 ```
 docker run -it -p 3979:3979/tcp -p 3979:3979/udp -v /home/{username}/.openttd:/config:rw -e "loadgame=game.sav" redditopenttd/openttd:latest
 ```
 This will start a server with the console accessible due to ```-it``` in the command line, to run in the background use ```-d```.
+
+## Available Environment Variables
+
+To use these in your `docker run` command, add a flag like so: `-e VARIABLE=data`
+
+| Variable | Function |
+| :----: | --- |
+| `BAN_LIST` | Path to a newline-delimited list of IP addresses to merge into the main configuration file during startup. (If not defined, does not merge, and uses those defined in openttd.cfg)|
+
+## Defining Bans Externally
+
+For some usage scenarios, you may want to import a list of bans stored in a different location. Some prime uses for this include having a shared ban list between multiple servers, as well as use on Kubernetes (where you want the configuration to be held read-only, but state like the banlist to be stored in a volume).
+
+The [Bans Sidecar](https://github.com/ropenttd/docker_openttd-bans-sidecar) has been built to help with this. See the documentation there for help setting the sidecar up (making sure that you mount `/config` in the same place as this container), then simply set the `BAN_LIST` environment variable to `bans.txt`.
+
+With this set up properly, the sidecar will run occasionally to back up the ban list which OpenTTD writes occasionally to its config file to save things. When the container starts up from scratch, it will automagically merge the bans from both your openttd.cfg and the bans file, write them all to openttd.cfg, and then start up like usual.
 
 ## Tags
 We'll automatically build a new tag every time a new beta or release candidate is released. If you'd like nightlies as well, please contact us, and I'll work it into our build scripts.
