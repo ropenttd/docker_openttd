@@ -8,7 +8,7 @@ CONFIG_CHECK="${COPY_CONFIG}x"
 
 if [ ${CONFIG_CHECK} != "x" ]; then
         echo "Copying static configuration from ${COPY_CONFIG}"
-        cp -r ${COPY_CONFIG}/* /config/
+        cp -Lr ${COPY_CONFIG}/* /config/
 fi
 if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
