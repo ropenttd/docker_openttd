@@ -47,6 +47,7 @@ To use these in your `docker run` command, add a flag like so: `-e VARIABLE=data
 | Variable | Function |
 | :----: | --- |
 | `BAN_LIST` | Path to a newline-delimited list of IP addresses to merge into the main configuration file during startup. (If not defined, does not merge, and uses those defined in openttd.cfg)|
+| `COPY_CONFIG` | Path to a directory to merge into /config at startup. Basically the only use for this is when you have a read-only configuration that you want to bring in (e.g k8s) but still have a writable active copy in /config. (Important note: Changes WILL NOT be written back to the path defined in `COPY_CONFIG` - this is one-way at container launch.) |
 
 ## Defining Bans Externally
 
