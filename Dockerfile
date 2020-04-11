@@ -1,5 +1,5 @@
 # BUILD ENVIRONMENT 1
-FROM debian:latest AS ottd_build
+FROM debian:stable-slim AS ottd_build
 
 ARG OPENTTD_VERSION="1.9.1"
 ARG OPENGFX_VERSION="0.5.4"
@@ -64,7 +64,7 @@ RUN go get github.com/ropenttd/docker_openttd-bans-sidecar/pkg/banread \
 # END BUILD ENVIRONMENTS
 # DEPLOY ENVIRONMENT
 
-FROM debian:latest
+FROM debian:stable-slim
 MAINTAINER duck. <me@duck.me.uk>
 
 # Setup the environment and install runtime dependencies
