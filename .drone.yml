@@ -1,0 +1,79 @@
+---
+kind: pipeline
+name: build-stable
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: determine-build-version
+  image: redditopenttd/cdn_version_scraper
+  settings:
+    CHANNEL: stable
+    OUTPUT_FILE: /version_store/env
+  volumes:
+  - name: cache
+    path: /version_store
+
+- name: build
+  image: plugins/docker
+  commands:
+  - source /version_store/env
+  - "export PLUGIN_BUILD_ARGS=\"OPENTTD_VERSION=$OPENTTD_VERSION\""
+  - "echo -n \"latest,stable,$OPENTTD_VERSION\" > .tags"
+  - /usr/local/bin/dockerd-entrypoint.sh /bin/drone-docker
+  settings:
+    password:
+      from_secret: docker_password
+    repo: redditopenttd/openttd
+    username:
+      from_secret: docker_username
+  volumes:
+  - name: cache
+    path: /version_store
+
+volumes:
+- name: cache
+  temp: {}
+
+---
+kind: pipeline
+name: build-testing
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+- name: determine-build-version
+  image: redditopenttd/cdn_version_scraper
+  settings:
+    CHANNEL: testing
+    OUTPUT_FILE: /version_store/env
+  volumes:
+  - name: cache
+    path: /version_store
+
+- name: build
+  image: plugins/docker
+  commands:
+  - source /version_store/env
+  - "export PLUGIN_BUILD_ARGS=\"OPENTTD_VERSION=$OPENTTD_VERSION\""
+  - "echo -n \"testing,rc,beta,$OPENTTD_VERSION\" > .tags"
+  - /usr/local/bin/dockerd-entrypoint.sh /bin/drone-docker
+  settings:
+    password:
+      from_secret: docker_password
+    repo: redditopenttd/openttd
+    username:
+      from_secret: docker_username
+  volumes:
+  - name: cache
+    path: /version_store
+
+volumes:
+- name: cache
+  temp: {}
+
+...

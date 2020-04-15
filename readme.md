@@ -60,10 +60,10 @@ With this set up properly, the sidecar will run occasionally to back up the ban 
 ## Tags
 We'll automatically build a new tag every time a new beta or release candidate is released. If you'd like nightlies as well, please contact us, and I'll work it into our build scripts.
 
-* `stable` tracks the latest stable release of OpenTTD.
-* `rc` tracks the latest release candidate of OpenTTD, falling back to the latest stable if it's newer.
-* `beta` tracks the latest beta release of OpenTTD, falling back to, you guessed it, the latest release candidate or stable if a newer one is available.
-* `latest` currently tracks `stable`, but this may change in future to track nightly releases.
+* `stable` and `latest` track the latest stable release of OpenTTD.
+* `testing` tracks the latest _unstable_ release of OpenTTD. This includes betas and release candidates.
+* **`rc` and `beta` are deprecated** in favour of `testing`.
+* The `nightly` tag is reserved for nightly builds (but is not currently functional).
 
 ## Alpine, OpenTTD, and You
 
