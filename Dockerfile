@@ -1,8 +1,8 @@
 # BUILD ENVIRONMENT 1
 FROM debian:stable-slim AS ottd_build
 
-ARG OPENTTD_VERSION="1.9.1"
-ARG OPENGFX_VERSION="0.5.4"
+ARG OPENTTD_VERSION="1.10.1"
+ARG OPENGFX_VERSION="0.6.0"
 
 # Get things ready
 RUN mkdir -p /config \
@@ -25,6 +25,7 @@ RUN apt-get update && \
 # Build OpenTTD itself
 WORKDIR /tmp/src
 
+
 RUN git clone https://github.com/OpenTTD/OpenTTD.git . \
     && git fetch --tags \
     && git checkout ${OPENTTD_VERSION}
@@ -44,8 +45,8 @@ RUN make -j"$(nproc)" \
 ## Install OpenGFX
 RUN mkdir -p /app/data/baseset/ \
     && cd /app/data/baseset/ \
-    && wget -q http://bundles.openttdcoop.org/opengfx/releases/${OPENGFX_VERSION}/opengfx-${OPENGFX_VERSION}.zip \
-    && unzip opengfx-${OPENGFX_VERSION}.zip \
+    && wget -q https://cdn.openttd.org/opengfx-releases/${OPENGFX_VERSION}/opengfx-${OPENGFX_VERSION}-all.zip \
+    && unzip opengfx-${OPENGFX_VERSION}-all.zip \
     && tar -xf opengfx-${OPENGFX_VERSION}.tar \
     && rm -rf opengfx-*.tar opengfx-*.zip
 
