@@ -66,13 +66,12 @@ RUN go get github.com/ropenttd/docker_openttd-bans-sidecar/pkg/banread \
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
-LABEL org.label-schema.build-date=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
-      org.label-schema.name="OpenTTD" \
+LABEL org.label-schema.name="OpenTTD" \
       org.label-schema.description="Lightweight build of OpenTTD, designed for server use, with some extra helping treats." \
       org.label-schema.url="https://github.com/ropenttd/docker_openttd" \
       org.label-schema.vcs-url="https://github.com/openttd/openttd" \
-      org.label-schema.vendor="Reddit OpenTTD"
-      org.label-schema.version=$OPENTTD_VERSION
+      org.label-schema.vendor="Reddit OpenTTD" \
+      org.label-schema.version=$OPENTTD_VERSION \
       org.label-schema.schema-version="1.0"
 MAINTAINER duck. <me@duck.me.uk>
 

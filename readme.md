@@ -2,6 +2,7 @@
 __An image brought to you by /r/openttd__
 
 [![Build Status](https://github.ci.duck.moe/api/badges/ropenttd/docker_openttd/status.svg)](https://github.ci.duck.moe/ropenttd/docker_openttd)
+[![](https://images.microbadger.com/badges/image/redditopenttd/openttd.svg)](https://microbadger.com/images/redditopenttd/openttd "Get your own image badge on microbadger.com")
 
 Built from OpenTTD source to provide the leanest, meanest image you'll come across for putting trainsets in containers.
 
