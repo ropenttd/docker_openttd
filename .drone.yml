@@ -29,6 +29,7 @@ steps:
     repo: redditopenttd/openttd
     username:
       from_secret: docker_username
+  privileged: true
   volumes:
   - name: cache
     path: /version_store
@@ -68,6 +69,7 @@ steps:
     repo: redditopenttd/openttd
     username:
       from_secret: docker_username
+  privileged: true
   volumes:
   - name: cache
     path: /version_store

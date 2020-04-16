@@ -45,6 +45,7 @@ local GameBuild(name, channel, tags) = {
     {
       name: "build",
       image: "plugins/docker",
+      privileged: true,
       settings: {
         username: {
           from_secret: "docker_username"
