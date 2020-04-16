@@ -66,6 +66,7 @@ RUN go get github.com/ropenttd/docker_openttd-bans-sidecar/pkg/banread \
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
+ARG OPENTTD_VERSION="1.10.1"
 LABEL org.label-schema.name="OpenTTD" \
       org.label-schema.description="Lightweight build of OpenTTD, designed for server use, with some extra helping treats." \
       org.label-schema.url="https://github.com/ropenttd/docker_openttd" \
