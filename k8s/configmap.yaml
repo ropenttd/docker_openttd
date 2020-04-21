@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config
-data:
-  openttd.cfg: |
-    [note]
-    not_complete=Put your configuration here in this configmap.

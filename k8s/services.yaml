@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: game
+  labels:
+    app: game
+spec:
+  clusterIP: None
+  selector:
+    app: game
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-tcp
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - name: game-tcp
+    protocol: TCP
+    port: 3979
+    targetPort: 3979
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: game-udp
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  ports:
+  - name: admin-udp
+    protocol: UDP
+    port: 3978
+    targetPort: 3978
+  - name: game-udp
+    protocol: UDP
+    port: 3979
+    targetPort: 3979

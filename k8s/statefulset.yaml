@@ -1,51 +1,16 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: openttd
-  labels:
-    app: openttd
-spec:
-  clusterIP: None
-  selector:
-    app: openttd
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: game-config
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Mi
-  storageClassName: local-storage
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: game-save
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-  storageClassName: local-storage
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: openttd
+  name: game
 spec:
   selector:
     matchLabels:
-      app: openttd
-  serviceName: openttd
+      app: game
+  serviceName: game
   template:
     metadata:
       labels:
-        app: openttd
+        app: game
     spec:
       terminationGracePeriodSeconds: 10
       initContainers:
@@ -102,31 +67,22 @@ spec:
       - name: game-configmap
         configMap:
           name: config
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: openttd-nodeport
-  labels:
-    app: openttd
-spec:
-  type: NodePort
-  externalTrafficPolicy: Local
-  ports:
-  - name: game-tcp
-    protocol: TCP
-    port: 3979
-    targetPort: 3979
-    nodePort: 3979
-  - name: advertise-udp
-    protocol: UDP
-    port: 3978
-    targetPort: 3978
-    nodePort: 3978
-  - name: game-udp
-    protocol: UDP
-    port: 3979
-    targetPort: 3979
-    nodePort: 3979
-  selector:
-    app: openttd
+  volumeClaimTemplates:
+    - metadata:
+        name: game-config
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Mi
+        storageClassName: local-path
+    - metadata:
+        name: game-save
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 5Gi
+        storageClassName: local-path
