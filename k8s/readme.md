@@ -14,7 +14,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 bases:
- - github.com/ropenttd/openttd/k8s
+ - github.com/ropenttd/docker_openttd/k8s
 
 namespace: openttd
 namePrefix: s1-
