@@ -7,6 +7,19 @@ metadata:
 spec:
   selector:
     app: game
+  ports:
+  - name: game-tcp
+    protocol: TCP
+    port: 3979
+    targetPort: 3979
+  - name: admin-udp
+    protocol: UDP
+    port: 3978
+    targetPort: 3978
+  - name: game-udp
+    protocol: UDP
+    port: 3979
+    targetPort: 3979
 ---
 apiVersion: v1
 kind: Service
