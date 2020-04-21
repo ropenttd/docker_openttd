@@ -45,6 +45,9 @@ spec:
         - containerPort: 3978
           protocol: UDP
           name: advertise-udp
+        - containerPort: 3977
+          protocol: TCP
+          name: admin-tcp
         volumeMounts:
         - name: game-save
           mountPath: /config/save

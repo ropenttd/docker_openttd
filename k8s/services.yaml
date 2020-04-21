@@ -8,11 +8,15 @@ spec:
   selector:
     app: game
   ports:
+  - name: admin-tcp
+    protocol: TCP
+    port: 3977
+    targetPort: 3977
   - name: game-tcp
     protocol: TCP
     port: 3979
     targetPort: 3979
-  - name: admin-udp
+  - name: advertise-udp
     protocol: UDP
     port: 3978
     targetPort: 3978
@@ -42,7 +46,7 @@ spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
   ports:
-  - name: admin-udp
+  - name: advertise-udp
     protocol: UDP
     port: 3978
     targetPort: 3978
