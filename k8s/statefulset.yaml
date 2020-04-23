@@ -30,6 +30,13 @@ spec:
       - name: openttd
         image: redditopenttd/openttd:latest
         imagePullPolicy: Always
+        resources:
+            limits:
+              memory: 1Gi
+              cpu: "1"
+            requests:
+              memory: 500Mi
+              cpu: "500m"
         env:
           - name: BAN_LIST
             value: "bans.txt"
@@ -55,8 +62,20 @@ spec:
           mountPath: /config
         - name: game-configmap
           mountPath: /k8s/config
+        livenessProbe:
+          tcpSocket:
+            port: game-tcp
+          initialDelaySeconds: 15
+          periodSeconds: 20
       - name: bans-sidecar
         image: redditopenttd/bans-sidecar:latest
+        resources:
+            limits:
+              memory: 50Mi
+              cpu: "50m"
+            requests:
+              memory: 10Mi
+              cpu: "5m"
         volumeMounts:
         - name: game-config
           mountPath: /config
