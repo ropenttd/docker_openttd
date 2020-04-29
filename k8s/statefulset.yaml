@@ -17,15 +17,27 @@ spec:
       - name: take-data-dir-ownership
         image: alpine:3.6
         command:
-        - chown
-        - -R
-        - 911:911
-        - /config
+          - chown
+          - -R
+          - 911:911
+          - /config
         volumeMounts:
-        - name: game-save
-          mountPath: /config/save
-        - name: game-config
-          mountPath: /config
+          - name: game-save
+            mountPath: /config/save
+          - name: game-config
+            mountPath: /config
+      - name: openttd-init
+        image: redditopenttd/openttd_k8s-helper:latest
+        args:
+          - --origin-config /k8s/config/openttd.cfg
+          - --destination /config
+          - --merge-bans /config/bans.txt
+          - --sync-newgrfs
+        volumeMounts:
+          - name: game-config
+            mountPath: /config
+          - name: game-configmap
+            mountPath: /k8s/config
       containers:
       - name: openttd
         image: redditopenttd/openttd:latest
@@ -37,11 +49,6 @@ spec:
             requests:
               memory: 500Mi
               cpu: "500m"
-        env:
-          - name: BAN_LIST
-            value: "bans.txt"
-          - name: COPY_CONFIG
-            value: "/k8s/config"
         ports:
         - containerPort: 3979
           protocol: TCP
@@ -60,8 +67,6 @@ spec:
           mountPath: /config/save
         - name: game-config
           mountPath: /config
-        - name: game-configmap
-          mountPath: /k8s/config
         livenessProbe:
           tcpSocket:
             port: game-tcp

@@ -1,4 +1,4 @@
-# BUILD ENVIRONMENT 1
+# BUILD ENVIRONMENT
 FROM debian:stable-slim AS ottd_build
 
 ARG OPENTTD_VERSION="1.10.1"
@@ -50,19 +50,7 @@ RUN mkdir -p /app/data/baseset/ \
     && tar -xf opengfx-${OPENGFX_VERSION}.tar \
     && rm -rf opengfx-*.tar opengfx-*.zip
 
-# END BUILD ENVIRONMENT 1
-# BUILD ENVIRONMENT 2
-FROM golang:alpine AS banread_build
-
-# Install git.
-# Git is required for fetching the dependencies.
-RUN apk update && apk add --no-cache git
-
-# Fetch banread and build the binary
-RUN go get github.com/ropenttd/docker_openttd-bans-sidecar/pkg/banread \
-    && go build -o /go/bin/banread github.com/ropenttd/docker_openttd-bans-sidecar/pkg/banread
-
-# END BUILD ENVIRONMENTS
+# END BUILD ENVIRONMENT
 # DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
@@ -90,9 +78,6 @@ WORKDIR /config
 
 # Copy the game data from the build container
 COPY --from=ottd_build /app /app
-
-# And the banread executable from its build container
-COPY --from=banread_build /go/bin/banread /usr/local/bin/banread
 
 # Add the entrypoint
 ADD entrypoint.sh /usr/local/bin/entrypoint

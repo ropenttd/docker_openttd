@@ -7,7 +7,8 @@ __An image brought to you by /r/openttd__
 Built from OpenTTD source to provide the leanest, meanest image you'll come across for putting trainsets in containers.
 
 
-## Using this Container
+## Using this Container on Docker
+
 ```
 docker run -d -p 3979:3979/tcp -p 3979:3979/udp redditopenttd/openttd:latest
 ```
@@ -43,22 +44,9 @@ docker run -it -p 3979:3979/tcp -p 3979:3979/udp -v /home/{username}/.openttd:/c
 ```
 This will start a server with the console accessible due to ```-it``` in the command line, to run in the background use ```-d```.
 
-## Available Environment Variables
+## Running on Kubernetes
 
-To use these in your `docker run` command, add a flag like so: `-e VARIABLE=data`
-
-| Variable | Function |
-| :----: | --- |
-| `BAN_LIST` | Path to a newline-delimited list of IP addresses to merge into the main configuration file during startup. (If not defined, does not merge, and uses those defined in openttd.cfg)|
-| `COPY_CONFIG` | Path to a directory to merge into /config at startup. Basically the only use for this is when you have a read-only configuration that you want to bring in (e.g k8s) but still have a writable active copy in /config. (Important note: Changes WILL NOT be written back to the path defined in `COPY_CONFIG` - this is one-way at container launch.) |
-
-## Defining Bans Externally
-
-For some usage scenarios, you may want to import a list of bans stored in a different location. Some prime uses for this include having a shared ban list between multiple servers, as well as use on Kubernetes (where you want the configuration to be held read-only, but state like the banlist to be stored in a volume).
-
-The [Bans Sidecar](https://github.com/ropenttd/docker_openttd-bans-sidecar) has been built to help with this. See the documentation there for help setting the sidecar up (making sure that you mount `/config` in the same place as this container), then simply set the `BAN_LIST` environment variable to `bans.txt`.
-
-With this set up properly, the sidecar will run occasionally to back up the ban list which OpenTTD writes occasionally to its config file to save things. When the container starts up from scratch, it will automagically merge the bans from both your openttd.cfg and the bans file, write them all to openttd.cfg, and then start up like usual.
+Because OpenTTD is quite heavily stateful, we have written some handy helper containers for you to use as init containers and sidecars. Please see the [openttd_k8s-helpers](https://github.com/ropenttd/openttd_k8s-helpers) repo for more information.
 
 ## Tags
 We'll automatically build a new tag every time a new beta or release candidate is released. If you'd like nightlies as well, please contact us, and I'll work it into our build scripts.
@@ -67,7 +55,3 @@ We'll automatically build a new tag every time a new beta or release candidate i
 * `testing` tracks the latest _unstable_ release of OpenTTD. This includes betas and release candidates.
 * **`rc` and `beta` are deprecated** in favour of `testing`.
 * The `nightly` tag is reserved for nightly builds (but is not currently functional).
-
-## Alpine, OpenTTD, and You
-
-This repo contains a dockerfile for building against Alpine Linux. However, if you try to run a server with openttd compiled on alpine, you’ll get a segmentation fault in saveload as soon as a client tries to connect. From what I’m aware, this is due to a quirk in musl-libc, so at present we’re stuck with using Debian (attempts have been made to shoehorn glibc into alpine with no success). If you succeed at getting OpenTTD to run and serve players with an alpine-derived image, please let us know!
