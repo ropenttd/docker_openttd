@@ -3,13 +3,7 @@
 # This script is based fairly heavily off bateau84/openttd's. Thanks, man!
 savepath="/config/save"
 LOADGAME_CHECK="${loadgame}x"
-BANLIST_CHECK="${BAN_LIST}x"
-CONFIG_CHECK="${COPY_CONFIG}x"
 
-if [ ${CONFIG_CHECK} != "x" ]; then
-        echo "Copying static configuration from ${COPY_CONFIG}"
-        cp -Lr ${COPY_CONFIG}/* /config/
-fi
 if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
         # yes this is a horrific hack but whatever
@@ -17,10 +11,6 @@ if [ ! -f /config/openttd.cfg ]; then
         timeout 3 /app/bin/openttd -D > /dev/null 2>&1
 fi
 
-if [ ${BANLIST_CHECK} != "x" ]; then
-        echo "Merging external Ban List from /config/${BAN_LIST}"
-        banread /config/openttd.cfg /config/${BAN_LIST}
-fi
 if [ ${LOADGAME_CHECK} != "x" ]; then
         case ${loadgame} in
                 'false')

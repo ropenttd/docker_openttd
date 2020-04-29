@@ -1,6 +1,33 @@
 apiVersion: v1
 kind: Service
 metadata:
+  name: game
+  labels:
+    app: game
+spec:
+  selector:
+    app: game
+  ports:
+  - name: admin-tcp
+    protocol: TCP
+    port: 3977
+    targetPort: 3977
+  - name: game-tcp
+    protocol: TCP
+    port: 3979
+    targetPort: 3979
+  - name: advertise-udp
+    protocol: UDP
+    port: 3978
+    targetPort: 3978
+  - name: game-udp
+    protocol: UDP
+    port: 3979
+    targetPort: 3979
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: game-tcp
 spec:
   type: LoadBalancer
