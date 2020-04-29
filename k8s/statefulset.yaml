@@ -28,10 +28,10 @@ spec:
             mountPath: /config
       - name: openttd-init
         image: redditopenttd/k8s-helper:latest
-        command:
-          - -origin-config /k8s/config/openttd.cfg
-          - -destination /config
-          - -merge-bans /config/bans.txt
+        args:
+          - -origin-config=/k8s/config/openttd.cfg
+          - -destination=/config
+          - -merge-bans=/config/bans.txt
           - -sync-newgrfs
         volumeMounts:
           - name: game-config
