@@ -29,10 +29,10 @@ spec:
       - name: openttd-init
         image: redditopenttd/k8s-helper:latest
         args:
-          - --origin-config /k8s/config/openttd.cfg
-          - --destination /config
-          - --merge-bans /config/bans.txt
-          - --sync-newgrfs
+          - -origin-config /k8s/config/openttd.cfg
+          - -destination /config
+          - -merge-bans /config/bans.txt
+          - -sync-newgrfs
         volumeMounts:
           - name: game-config
             mountPath: /config
