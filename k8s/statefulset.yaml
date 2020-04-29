@@ -27,7 +27,7 @@ spec:
           - name: game-config
             mountPath: /config
       - name: openttd-init
-        image: redditopenttd/openttd_k8s-helper:latest
+        image: redditopenttd/k8s-helper:latest
         args:
           - --origin-config /k8s/config/openttd.cfg
           - --destination /config
