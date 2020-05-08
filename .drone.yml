@@ -1,5 +1,6 @@
 ---
 kind: pipeline
+type: kubernetes
 name: build-stable
 
 platform:
@@ -40,6 +41,7 @@ volumes:
 
 ---
 kind: pipeline
+type: kubernetes
 name: build-testing
 
 platform:

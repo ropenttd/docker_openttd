@@ -1,8 +1,10 @@
 local repoName = "redditopenttd/openttd";
+local buildType = "kubernetes";
 
 local GameBuild(name, channel, tags) = {
   kind: "pipeline",
   name: name,
+  type: buildType,
   when: [
       {
         branch: [
