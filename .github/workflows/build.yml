@@ -31,14 +31,13 @@ jobs:
 
       - name: Push image to Docker Hub
         run: |
-          IMAGE_NAME=redditopenttd/openttd
-
-          echo VERSION=${{ steps.version.outputs.version }}
+          echo Tagging for stable version ${{ steps.version.outputs.version }}
 
           docker tag $IMAGE_NAME $IMAGE_NAME:latest
           docker tag $IMAGE_NAME $IMAGE_NAME:stable
           docker tag $IMAGE_NAME $IMAGE_NAME:${{ steps.version.outputs.version }}
-          docker push $IMAGE_NAME:$VERSION
+          docker push $IMAGE_NAME:${{ steps.version.outputs.version }}
+
   testing:
     runs-on: ubuntu-latest
 
@@ -59,11 +58,10 @@ jobs:
 
       - name: Push image to Docker Hub
         run: |
-
-          echo VERSION=${{ steps.version.outputs.version }}
+          echo Tagging for testing version ${{ steps.version.outputs.version }}
 
           docker tag $IMAGE_NAME $IMAGE_NAME:testing
           docker tag $IMAGE_NAME $IMAGE_NAME:rc
           docker tag $IMAGE_NAME $IMAGE_NAME:beta
           docker tag $IMAGE_NAME $IMAGE_NAME:${{ steps.version.outputs.version }}
-          docker push $IMAGE_NAME:$VERSION
+          docker push $IMAGE_NAME:${{ steps.version.outputs.version }}
