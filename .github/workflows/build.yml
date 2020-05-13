@@ -33,10 +33,10 @@ jobs:
         run: |
           echo Tagging for stable version ${{ steps.version.outputs.version }}
 
-          docker tag $IMAGE_NAME $IMAGE_NAME:latest
-          docker tag $IMAGE_NAME $IMAGE_NAME:stable
-          docker tag $IMAGE_NAME $IMAGE_NAME:${{ steps.version.outputs.version }}
-          docker push $IMAGE_NAME:${{ steps.version.outputs.version }}
+          for t in latest stable ${{ steps.version.outputs.version }}; do
+              docker tag $IMAGE_NAME $IMAGE_NAME:${t}
+              docker push $IMAGE_NAME:${t}
+          done
 
   testing:
     runs-on: ubuntu-latest
@@ -60,8 +60,7 @@ jobs:
         run: |
           echo Tagging for testing version ${{ steps.version.outputs.version }}
 
-          docker tag $IMAGE_NAME $IMAGE_NAME:testing
-          docker tag $IMAGE_NAME $IMAGE_NAME:rc
-          docker tag $IMAGE_NAME $IMAGE_NAME:beta
-          docker tag $IMAGE_NAME $IMAGE_NAME:${{ steps.version.outputs.version }}
-          docker push $IMAGE_NAME:${{ steps.version.outputs.version }}
+          for t in testing rc beta ${{ steps.version.outputs.version }}; do
+              docker tag $IMAGE_NAME $IMAGE_NAME:${t}
+              docker push $IMAGE_NAME:${t}
+          done
