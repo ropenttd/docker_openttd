@@ -1,0 +1,67 @@
+name: Build and Push Latest Versions
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 3 * * *'
+
+jobs:
+  stable:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Discover upstream version
+        uses: ropenttd/cdn_version_scraper@master
+        with:
+          channel: 'stable'
+        id: version
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg OPENTTD_VERISON=${{ steps.version.outputs.version }}
+
+      - name: Log into Docker Registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push image to Docker Hub
+        run: |
+          IMAGE_ID=redditopenttd/openttd
+
+          echo VERSION=${{ steps.version.outputs.version }}
+
+          docker tag $IMAGE_NAME $IMAGE_ID:latest
+          docker tag $IMAGE_NAME $IMAGE_ID:stable
+          docker tag $IMAGE_NAME $IMAGE_ID:${{ steps.version.outputs.version }}
+          docker push $IMAGE_ID:$VERSION
+  testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Discover upstream version
+        uses: ropenttd/cdn_version_scraper@master
+        with:
+          channel: 'testing'
+        id: version
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg OPENTTD_VERISON=${{ steps.version.outputs.version }}
+
+      - name: Log into Docker Registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push image to Docker Hub
+        run: |
+          IMAGE_ID=redditopenttd/openttd
+
+          echo VERSION=${{ steps.version.outputs.version }}
+
+          docker tag $IMAGE_NAME $IMAGE_ID:testing
+          docker tag $IMAGE_NAME $IMAGE_ID:rc
+          docker tag $IMAGE_NAME $IMAGE_ID:beta
+          docker tag $IMAGE_NAME $IMAGE_ID:${{ steps.version.outputs.version }}
+          docker push $IMAGE_ID:$VERSION
