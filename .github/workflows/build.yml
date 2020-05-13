@@ -21,7 +21,7 @@ jobs:
         id: version
 
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg OPENTTD_VERISON=${{ steps.version.outputs.version }}
+        run: docker build . --file Dockerfile --build-arg OPENTTD_VERSION=${{ steps.version.outputs.version }} --tag redditopenttd/openttd
 
       - name: Log into Docker Registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
@@ -49,7 +49,7 @@ jobs:
         id: version
 
       - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME --build-arg OPENTTD_VERISON=${{ steps.version.outputs.version }}
+        run: docker build . --file Dockerfile --build-arg OPENTTD_VERSION=${{ steps.version.outputs.version }} --tag redditopenttd/openttd
 
       - name: Log into Docker Registry
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
