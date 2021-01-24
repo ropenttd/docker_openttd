@@ -16,7 +16,7 @@ then
 else
   /tmp/src/configure \
   --enable-dedicated \
-  --binary-dir=bin \
+  --binary-dir=/ \
   --data-dir=data \
   --prefix-dir=/app \
   --personal-dir=/ \
