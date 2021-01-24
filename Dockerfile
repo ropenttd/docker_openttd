@@ -16,6 +16,7 @@ RUN apt-get update && \
     git \
     g++ \
     make \
+    cmake \
     patch \
     zlib1g-dev \
     liblzma-dev \
@@ -25,21 +26,13 @@ RUN apt-get update && \
 # Build OpenTTD itself
 WORKDIR /tmp/src
 
-
 RUN git clone https://github.com/OpenTTD/OpenTTD.git . \
     && git fetch --tags \
     && git checkout ${OPENTTD_VERSION}
 
-RUN /tmp/src/configure \
-    --enable-dedicated \
-    --binary-dir=bin \
-    --data-dir=data \
-    --prefix-dir=/app \
-    --personal-dir=/ \
-    —-enable-debug
-
-RUN make -j"$(nproc)" \
-    && make install
+# Perform the build with the build script (1.11 switches to cmake, so use a script for decision making)
+ADD builder.sh /usr/local/bin/builder
+RUN chmod +x /usr/local/bin/builder && builder && rm /usr/local/bin/builder
 
 # Add the latest graphics files
 ## Install OpenGFX
