@@ -4,6 +4,10 @@ FROM debian:stable-slim AS ottd_build
 ARG OPENTTD_VERSION="1.10.1"
 ARG OPENGFX_VERSION="0.6.0"
 
+# Setup user and group parameters
+ENV PUID="1000"
+ENV GUID="1000"
+
 # Get things ready
 RUN mkdir -p /config \
     && mkdir /tmp/src
@@ -87,5 +91,6 @@ EXPOSE 3979/udp
 EXPOSE 3977/tcp
 
 # Finally, let's run OpenTTD!
-USER openttd
+USER ${UID}:${GID}
+
 CMD /usr/local/bin/entrypoint
