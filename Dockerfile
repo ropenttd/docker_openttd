@@ -91,6 +91,7 @@ EXPOSE 3979/udp
 EXPOSE 3977/tcp
 
 # Finally, let's run OpenTTD!
-USER ${UID}:${GID}
+USER ${PUID}:${GUID}
 
 CMD /usr/local/bin/entrypoint
+ 
