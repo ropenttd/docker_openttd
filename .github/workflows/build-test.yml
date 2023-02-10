@@ -1,14 +1,14 @@
-name: Build and Push Latest Versions
+name: Build Testing
 
 on:
   push:
     branches:
       - master
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '0 4 * * *'
 
 jobs:
-  stable:
+  testing-amd64:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,15 +16,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: '0'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: all
       
       - name: Discover upstream version
         uses: ropenttd/cdn_version_scraper@master
         with:
-          channel: 'stable'
+          channel: 'testing'
         id: version
 
       - name: Generate CRI metadata
@@ -42,8 +38,9 @@ jobs:
             org.opencontainers.image.vendor="Reddit OpenTTD"
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
           tags: |
-            latest
-            stable
+            testing
+            rc
+            beta
             ${{ steps.version.outputs.version }}
       
       - name: Set up Buildx
@@ -67,12 +64,13 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-  testing:
+  
+  testing-arm64:
+    # Separate job in the hope that one day, maybe one day, Github will support ARM64 build nodes
     runs-on: ubuntu-latest
 
     steps:
@@ -132,7 +130,7 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

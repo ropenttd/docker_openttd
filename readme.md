@@ -1,7 +1,8 @@
 # Containerised OpenTTD
 __An image brought to you by /r/openttd__
 
-![Build and Push Latest Versions](https://github.com/ropenttd/docker_openttd/workflows/Build%20and%20Push%20Latest%20Versions/badge.svg?branch=master)
+![Build Stable](https://github.com/ropenttd/docker_openttd/workflows/Build%20Stable/badge.svg?branch=master)
+![Build Testing](https://github.com/ropenttd/docker_openttd/workflows/Build%20Testing/badge.svg?branch=master)
 
 Built from OpenTTD source to provide the leanest, meanest image you'll come across for putting trainsets in containers.
 
