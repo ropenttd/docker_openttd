@@ -9,7 +9,6 @@ on:
 
 jobs:
   build:
-    # Separate job in the hope that one day, maybe one day, Github will support ARM64 build nodes
     runs-on: ubuntu-latest
 
     steps:
@@ -47,6 +46,7 @@ jobs:
             latest
             stable
             ${{ steps.version.outputs.version }}
+            ${{ steps.version.outputs.semver_major }}
       
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v2
