@@ -7,36 +7,71 @@ on:
   schedule:
     - cron: '0 3 * * *'
 
-env:
-  IMAGE_NAME: redditopenttd/openttd
-
 jobs:
   stable:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
+      - name: Git checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+      
       - name: Discover upstream version
         uses: ropenttd/cdn_version_scraper@master
         with:
           channel: 'stable'
         id: version
 
-      - name: Build image
-        run: docker build . --file Dockerfile --build-arg OPENTTD_VERSION=${{ steps.version.outputs.version }} --tag $IMAGE_NAME
+      - name: Generate CRI metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}
+            docker.io/redditopenttd/openttd
+          labels: |
+            org.opencontainers.image.title="OpenTTD"
+            org.opencontainers.image.description="Lightweight build of OpenTTD, designed for server use, with some extra helping treats."
+            org.opencontainers.image.url="https://github.com/ropenttd/docker_openttd"
+            org.opencontainers.image.source="https://github.com/openttd/openttd"
+            org.opencontainers.image.vendor="Reddit OpenTTD"
+            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+          tags: |
+            latest
+            stable
+            ${{ steps.version.outputs.version }}
+      
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to GHCI
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Log into Docker Registry
-        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-
-      - name: Push image to Docker Hub
-        run: |
-          echo Tagging for stable version ${{ steps.version.outputs.version }}
-
-          for t in latest stable ${{ steps.version.outputs.version }}; do
-              docker tag $IMAGE_NAME $IMAGE_NAME:${t}
-              docker push $IMAGE_NAME:${t}
-          done
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          context: .
+          file: ./Dockerfile
+          # linux/arm64 coming shortly
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
   testing:
     runs-on: ubuntu-latest
