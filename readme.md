@@ -26,6 +26,11 @@ You can find the images at the following locations:
 | testing | The latest _unstable_ release of OpenTTD, including betas and release candidates. |
 | nightly | _Reserved_ (if you need this, raise an issue!) |
 
+### Architectures
+
+Images are built for _AMD64_ (x86_64, i.e 64bit PC) and _ARM64_ (modern ARM, i.e Raspberry Pi 3 running 64-bit OS).
+
+If you need an architecture not listed above, please raise an issue.
 
 ## Using this Container
 ### Docker
