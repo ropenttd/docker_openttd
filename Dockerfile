@@ -2,7 +2,7 @@
 FROM debian:stable-slim AS ottd_build
 
 ARG OPENTTD_VERSION="1.10.1"
-ARG OPENGFX_VERSION="0.6.0"
+ARG OPENGFX_VERSION="7.1"
 
 # Get things ready
 RUN mkdir -p /config \
