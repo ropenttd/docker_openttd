@@ -19,10 +19,9 @@ You can find the images at the following locations:
 
 **Please prefer the Github Container registry for new deployments.** It's 100% compatible with your Docker installation.
 
-| Tag | Description |
+| Tag(s) | Description |
 | --- | ----------- |
-| stable | The latest stable release of OpenTTD. |
-| latest | _As stable_ |
+| stable, latest | The latest stable release of OpenTTD. |
 | _Major Version_ | The latest stable release for this major version (i.e _7_ may point to _7.1.2_) |
 | testing | The latest _unstable_ release of OpenTTD, including betas and release candidates. |
 | nightly | _Reserved_ (if you need this, raise an issue!) |
