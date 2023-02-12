@@ -1,4 +1,4 @@
-name: Build Stable
+name: Build
 
 on:
   push:
@@ -8,9 +8,21 @@ on:
     - cron: '0 3 * * *'
 
 jobs:
-  build:
+  cri:
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        train:
+          - stable
+          - testing
+        include:
+          - train: stable
+            tags: |
+              latest
+              stable
+          - train: testing
+            tags: |
+              testing
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
@@ -25,7 +37,7 @@ jobs:
       - name: Discover upstream version
         uses: ropenttd/cdn_version_scraper@master
         with:
-          channel: 'stable'
+          channel: ${{ matrix.train }}
         id: version
 
       - name: Generate CRI metadata
@@ -43,8 +55,7 @@ jobs:
             org.opencontainers.image.vendor=Reddit OpenTTD
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
           tags: |
-            latest
-            stable
+            ${{ matrix.tags }}
             ${{ steps.version.outputs.version }}
             ${{ steps.version.outputs.semver_major }}
       
