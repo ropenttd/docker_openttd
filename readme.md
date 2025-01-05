@@ -5,6 +5,14 @@ __An image brought to you by /r/openttd__
 
 Built from OpenTTD source to provide the leanest, meanest image you'll come across for putting trainsets in containers.
 
+
+## Important Changes
+
+### 2025.1
+The location of saved games / content was moved back to `/config` as originally intended. This incorrect functionality has been present for quite some time, but is now fixed.
+
+**This may well break existing installations**. If it does, move the contents of `{config}/.local/share/` to `{config}` - done correctly, your existing `openttd.cfg` and `save` directories (among others) should exist in `/config` in the container.
+
 ## Image Names & Tags
 
 The CI system will automatically build the current latest versions at 3AM every day. This is a little hacky, but it does mean we get new builds within 24 hours of release.

@@ -4,6 +4,9 @@
 savepath="/config/save"
 LOADGAME_CHECK="${loadgame}x"
 
+# Required to force config to save to /config
+export XDG_DATA_HOME=/config
+
 if [ ! -f /config/openttd.cfg ]; then
         # we start the server then kill it quickly to write a config file
         # yes this is a horrific hack but whatever

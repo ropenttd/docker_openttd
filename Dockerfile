@@ -1,7 +1,7 @@
 # BUILD ENVIRONMENT
 FROM debian:stable-slim AS ottd_build
 
-ARG OPENTTD_VERSION="1.10.1"
+ARG OPENTTD_VERSION="14.1"
 ARG OPENGFX_VERSION="7.1"
 
 # Get things ready

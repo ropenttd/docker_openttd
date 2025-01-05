@@ -5,6 +5,7 @@ then
     cmake \
     -DOPTION_DEDICATED=ON \
     -DOPTION_INSTALL_FHS=OFF \
+    -DOPTION_PACKAGE_DEPENDENCIES=ON \
     -DCMAKE_BUILD_TYPE=release \
     -DGLOBAL_DIR=/app \
     -DPERSONAL_DIR=/ \
