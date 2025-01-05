@@ -18,6 +18,8 @@ RUN apt-get update && \
     make \
     cmake \
     patch \
+    libcurl4-openssl-dev \
+    libpng-dev \
     zlib1g-dev \
     liblzma-dev \
     liblzo2-dev \
@@ -56,6 +58,7 @@ RUN mkdir -p /config \
     && apt-get update \
     && apt-get install -y \
     libc6 \
+    libcurl4 \
     zlib1g \
     liblzma5 \
     liblzo2-2
