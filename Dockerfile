@@ -65,7 +65,7 @@ RUN mkdir -p /config \
 
 WORKDIR /config
 
-# Copy the game data from the build container
+# Copy the game data from the build container
 COPY --from=ottd_build /app /app
 
 # Add the entrypoint
@@ -81,6 +81,12 @@ EXPOSE 3979/udp
 
 # Expose the admin port
 EXPOSE 3977/tcp
+
+# Set default data home directory to force use of /config
+ENV XDG_DATA_HOME=/config
+
+# Update path to use binaries in /app
+ENV PATH="$PATH:/app"
 
 # Finally, let's run OpenTTD!
 USER openttd

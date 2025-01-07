@@ -8,10 +8,14 @@ Built from OpenTTD source to provide the leanest, meanest image you'll come acro
 
 ## Important Changes
 
+### 2025.1.1
+
+A workaround to use existing game folder locations, if present, was added. New installations of the container will use `/config` by default - and whilst it is recommended to migrate when possible, this provides backwards compatibility.
+
 ### 2025.1
 The location of saved games / content was moved back to `/config` as originally intended. This incorrect functionality has been present for quite some time, but is now fixed.
 
-**This may well break existing installations**. If it does, move the contents of `{config}/.local/share/` to `{config}` - done correctly, your existing `openttd.cfg` and `save` directories (among others) should exist in `/config` in the container.
+~~**This may well break existing installations**.~~ If it does, move the contents of `{config}/.local/share/` to `{config}` - done correctly, your existing `openttd.cfg` and `save` directories (among others) should exist in `/config` in the container.
 
 ## Image Names & Tags
 
