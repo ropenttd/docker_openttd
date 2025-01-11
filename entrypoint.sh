@@ -30,9 +30,9 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
             		SAVEGAME_TARGET=`ls -rt ${SAVEPATH}/autosave/*.sav | tail -n1`
 
             		if [ -r "${SAVEGAME_TARGET}" ]; then
-                    	echo "INFO: Loading from latest autosave - ${SAVEGAME_TARGET}"
-                        exec /app/openttd -D ${EXTRA_FLAGS} -g "${SAVEGAME_TARGET}" -x -d ${DEBUG}
-                        exit 0
+                                echo "INFO: Loading from latest autosave - ${SAVEGAME_TARGET}"
+                                exec /app/openttd -D ${EXTRA_FLAGS} -g "${SAVEGAME_TARGET}" -x -d ${DEBUG}
+                                exit 0
             		else
                 		echo "FATAL: ${SAVEGAME_TARGET} not found"
                 		exit 1
