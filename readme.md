@@ -58,6 +58,7 @@ where:
 * false: standard behaviour, just start a new game
 * last-autosave: load the last chronological autosave
 * exit: try to load autosave/exit.sav, otherwise default to a new game
+    * Please make sure `autosave_on_exit = true` in your _openttd.cfg_ for this to work.
 * (savename): full name of a save file in config/saves
 
 You'll probably want stuff to be persistant between container rebuilds, so we've got the `/config` volume for exactly that purpose.
