@@ -31,7 +31,7 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
 
             		if [ -r "${SAVEGAME_TARGET}" ]; then
                     	echo "INFO: Loading from latest autosave - ${SAVEGAME_TARGET}"
-                        exec /app/openttd -D ${EXTRA_FLAGS} -g ${SAVEGAME_TARGET} -x -d ${DEBUG}
+                        exec /app/openttd -D ${EXTRA_FLAGS} -g "${SAVEGAME_TARGET}" -x -d ${DEBUG}
                         exit 0
             		else
                 		echo "FATAL: ${SAVEGAME_TARGET} not found"
@@ -42,13 +42,13 @@ if [ "${LOADGAME_CHECK}" != "x" ]; then
             		SAVEGAME_TARGET="${SAVEPATH}/autosave/exit.sav"
 
             		if [ -r "${SAVEGAME_TARGET}" ]; then
-                    	echo "INFO: Loading from exit save"
-                        exec /app/openttd -D ${EXTRA_FLAGS} -g "${SAVEGAME_TARGET}" -x -d ${DEBUG}
-                        exit 0
+                                echo "INFO: Loading from exit save"
+                                exec /app/openttd -D ${EXTRA_FLAGS} -g "${SAVEGAME_TARGET}" -x -d ${DEBUG}
+                                exit 0
             		else
                 		echo "${SAVEGAME_TARGET} not found - Creating a new game."
                 		exec /app/openttd -D ${EXTRA_FLAGS} -x -d ${DEBUG}
-                    	exit 0
+                    	        exit 0
             		fi
                 ;;
                 *)
