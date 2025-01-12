@@ -51,9 +51,11 @@ docker run -d -p 3979:3979/tcp -p 3979:3979/udp redditopenttd/openttd:latest
 ```
 
 The container is set by default to start a fresh game every time you restart the container. You can, however, change this behaviour with the `loadgame` envvar:
+
 ```
 -e "loadgame={false|last-autosave|exit|(savename)}"
 ```
+
 where:
 * false: standard behaviour, just start a new game
 * last-autosave: load the last chronological autosave
@@ -61,19 +63,20 @@ where:
     * Please make sure `autosave_on_exit = true` in your _openttd.cfg_ for this to work.
 * (savename): full name of a save file in config/saves
 
-You'll probably want stuff to be persistant between container rebuilds, so we've got the `/config` volume for exactly that purpose.
+You'll probably want stuff to be persistent between container rebuilds, so we've got the `/config` volume for exactly that purpose.
 
 ```
 -v /home/{username}/.openttd:/config:rw
 ```
-**Heads up:** If we can't find an `openttd.cfg` in `/config`, we'll attempt to ask OpenTTD to start a new configuration directory there. We strongly recommend that if you're starting fresh, you stop the container and configure openttd.cfg as per [the wiki](https://wiki.openttd.org/Openttd.cfg).
 
-If you don't want the entire `.openttd` directory to be copied to your local FS statically, you may want to consider mounting files / directories directly like so:
+> [!IMPORTANT]  
+> If we can't find an `openttd.cfg` in `/config`, we'll attempt to ask OpenTTD to start a new configuration directory there.
+> We strongly recommend that if you're starting fresh, you stop the container and configure `openttd.cfg` as per [the wiki](https://wiki.openttd.org/Openttd.cfg).
 
-```
--v /home/{username}/.openttd/openttd.cfg:/config/openttd.cfg:ro
--v /home/{username}/.openttd/save/:/config/save:rw
-```
+> [!WARNING]  
+> Separately mounting sub-directories of `/config` (such as `/save`) is unsupported, and may result in
+> strange behavior (in particular, saves failing). If things seem funky, try just mounting `/config`.
+
 The easiest way to play with NewGRF's is to first download and configure them how you want on a local machine with a GUI. Then in the config/ directory copy the folder from local machine named content_downloaded to the server. Next update the openttd.cfg file from your local machine, this is to ensure that when you create a new server your NewGRF settings will be copied across.
 
 #### An example command to start a server
@@ -85,7 +88,6 @@ This will start a server with the console accessible due to ```-it``` in the com
 ### podman
 
 Replace all of the `docker` commands in the _docker_ section with `podman`. If you're having issues, please raise an issue.
-
 
 ### Kubernetes
 
