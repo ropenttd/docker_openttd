@@ -9,12 +9,16 @@ on:
 
 jobs:
   cri:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         train:
           - stable
           - testing
+        arch: 
+          - os: ubuntu-24.04
+            name: linux/amd64 
+          - os: ubuntu-24.04-arm
+            name: linux/arm64
         include:
           - train: stable
             tags: |
@@ -23,16 +27,12 @@ jobs:
           - train: testing
             tags: |
               testing
+    runs-on: ${{ matrix.arch.os }}
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: arm64
       
       - name: Discover upstream version
         uses: ropenttd/cdn_version_scraper@master
@@ -82,7 +82,7 @@ jobs:
           file: ./Dockerfile
           build-args: |
             OPENTTD_VERSION=${{ steps.version.outputs.version }}
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.arch.name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
