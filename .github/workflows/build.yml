@@ -17,16 +17,10 @@ jobs:
         arch: 
           - os: ubuntu-24.04
             name: linux/amd64 
+            label: linux-amd64
           - os: ubuntu-24.04-arm
             name: linux/arm64
-        include:
-          - train: stable
-            tags: |
-              latest
-              stable
-          - train: testing
-            tags: |
-              testing
+            label: linux-arm64
     runs-on: ${{ matrix.arch.os }}
     steps:
       - name: Git checkout
@@ -39,6 +33,21 @@ jobs:
         with:
           channel: ${{ matrix.train }}
         id: version
+
+      # The following is needed to ensure there isn't a race condition if upstream updates the version between
+      # this build workflow running, and the manifest workflow running.
+      # There is still a risk that the version returned by each matrixed architecture run is different,
+      # but that is (hopefully!) minimal.
+      - name: Dump upstream train version to file
+        shell: bash
+        run: |
+          echo $GITHUB_OUTPUT > version.txt
+      - name: Upload upstream train version information
+        uses: actions/upload-artifact@v3
+        with:
+          name: ver-${{ matrix.train }}
+          path: version.txt
+          retention-days: 1
 
       - name: Generate CRI metadata
         id: meta
@@ -55,9 +64,7 @@ jobs:
             org.opencontainers.image.vendor=Reddit OpenTTD
             org.opencontainers.image.version=${{ steps.version.outputs.version }}
           tags: |
-            ${{ matrix.tags }}
-            ${{ steps.version.outputs.version }}
-            ${{ steps.version.outputs.semver_major }}
+            ${{ steps.version.outputs.version }}-${{ matrix.arch.label }}
       
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v2
@@ -68,6 +75,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -86,3 +94,71 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
+
+  release-bundle-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: cri
+    strategy:
+      matrix:
+        train:
+          - stable
+          - testing
+        container_store:
+          - docker
+          - ghcr
+
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Login to Github Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get target version for this train from build phase
+        uses: actions/download-artifact@v3
+        with:
+          name: ver-${{ matrix.train }}
+
+      - name: Set target version environment variable
+        run: cat version.txt >> $GITHUB_ENV
+      
+      - name: Create and push manifest (GHCR, stable)
+        uses: Noelware/docker-manifest-action@0.4.2
+        if: matrix.train == 'stable' && matrix.container_store == 'ghcr'
+        with:
+          inputs: ${{env.GHCR_REPO}}:latest,${{env.GHCR_REPO}}:stable,${{env.GHCR_REPO}}:${{env.version}},${{env.GHCR_REPO}}:${{env.semver_major}}
+          images: ${{env.GHCR_REPO}}:${{env.version}}-linux-amd64,${{env.GHCR_REPO}}:${{env.version}}-linux-arm64
+          push: true
+      
+      - name: Create and push manifest (GHCR, testing)
+        uses: Noelware/docker-manifest-action@0.4.2
+        if: matrix.train == 'testing' && matrix.container_store == 'ghcr'
+        with:
+          inputs: ${{env.GHCR_REPO}}:testing,${{env.GHCR_REPO}}:${{env.version}}
+          images: ${{env.GHCR_REPO}}:${{env.version}}-linux-amd64,${{env.GHCR_REPO}}:${{env.version}}-linux-arm64
+          push: true
+      
+      - name: Create and push manifest (Docker, stable)
+        uses: Noelware/docker-manifest-action@0.4.2
+        if: matrix.train == 'stable' && matrix.container_store == 'docker'
+        with:
+          inputs: ${{env.DOCKER_REPO}}:latest,${{env.DOCKER_REPO}}:stable,${{env.DOCKER_REPO}}:${{env.version}},${{env.DOCKER_REPO}}:${{ steps.version.outputs.semver_major }}
+          images: ${{env.DOCKER_REPO}}:${{env.version}}-linux-amd64,${{env.DOCKER_REPO}}:${{env.version}}-linux-arm64
+          push: true
+      
+      - name: Create and push manifest (Docker, testing)
+        uses: Noelware/docker-manifest-action@0.4.2
+        if: matrix.train == 'testing' && matrix.container_store == 'docker'
+        with:
+          inputs: ${{env.DOCKER_REPO}}:testing,${{env.DOCKER_REPO}}:${{env.version}}
+          images: ${{env.DOCKER_REPO}}:${{env.version}}-linux-amd64,${{env.DOCKER_REPO}}:${{env.version}}-linux-arm64
+          push: true
