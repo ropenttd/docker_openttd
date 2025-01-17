@@ -23,11 +23,6 @@ jobs:
             label: linux-arm64
     runs-on: ${{ matrix.arch.os }}
     steps:
-      - name: Diagnostic information
-        run: |
-          uname -a
-          docker pull ghcr.io/ropenttd/cdn_version_scraper:latest
-          docker image inspect ghcr.io/ropenttd/cdn_version_scraper:latest
       
       - name: Git checkout
         uses: actions/checkout@v3
