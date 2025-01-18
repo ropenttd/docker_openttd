@@ -9,38 +9,28 @@ on:
 
 jobs:
   get-upstream-versions:
-    strategy:
-      matrix:
-        train:
-          - stable
-          - testing
-    runs-on: ubuntu-24.04
+    # This is a bit yucky - it feels like it should be possible to do this with a matrix.
+    runs-on: ${{ matrix.arch.os }}
+    outputs:
+      stable_version: ${{steps.version-stable.outputs.version}}
+      stable_semver_major: ${{steps.version-stable.outputs.semver_major}}
+      stable_semver_minor: ${{steps.version-stable.outputs.semver_minor}}
+      stable_semver_patch: ${{steps.version-stable.outputs.semver_patch}}
+      testing_version: ${{steps.version-testing.outputs.version}}
+      testing_semver_major: ${{steps.version-testing.outputs.semver_major}}
+      testing_semver_minor: ${{steps.version-testing.outputs.semver_minor}}
+      testing_semver_patch: ${{steps.version-testing.outputs.semver_patch}}
     steps:
-      - name: Discover upstream version
+      - name: Discover upstream stable version
         uses: ropenttd/cdn_version_scraper@master
         with:
-          channel: ${{ matrix.train }}
-        id: version
-
-      # The following is needed to ensure there isn't a race condition if upstream updates the version between
-      # this build workflow running, and the manifest workflow running.
-      # There is still a risk that the version returned by each matrixed architecture run is different,
-      # but that is (hopefully!) minimal.
-      - name: Dump upstream train version to file
-        shell: bash
-        run: |
-          echo version=${{steps.version.outputs.version}} >> version.txt
-          echo semver_major=${{steps.version.outputs.semver_major}} > version.txt
-          echo semver_minor=${{steps.version.outputs.semver_minor}} > version.txt
-          echo semver_patch=${{steps.version.outputs.semver_patch}} > version.txt
-          cat version.txt
-      - name: Upload upstream train version information
-        uses: actions/upload-artifact@v4
+          channel: stable
+        id: version-stable
+      - name: Discover upstream testing version
+        uses: ropenttd/cdn_version_scraper@master
         with:
-          name: ver-${{ matrix.train }}
-          path: version.txt
-          retention-days: 1
-          overwrite: true
+          channel: testing
+        id: version-stable
   cri:
     needs:
     - get-upstream-versions
@@ -62,18 +52,25 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
-
-      - name: Get target version for this train from version phase
-        uses: actions/download-artifact@v4
-        with:
-          name: ver-${{ matrix.train }}
-
-      - name: Set target version environment variables
+        
+      - name: Set target version environment variables 
+        # Again, this is ewwy.
+        if: matrix.train == 'stable'
         run: |
-          while read p; do
-            echo $p >> $GITHUB_ENV
-          done <version.txt
+          echo version=${{needs.get-upstream-versions.outputs.stable_version}} >> $GITHUB_ENV
+          echo semver_major=${{needs.get-upstream-versions.outputs.stable_semver_major}} >> $GITHUB_ENV
+          echo semver_minor=${{needs.get-upstream-versions.outputs.stable_semver_minor}} >> $GITHUB_ENV
+          echo semver_patch=${{needs.get-upstream-versions.outputs.stable_semver_patch}} >> $GITHUB_ENV
     
+      - name: Set target version environment variables (testing)
+        # Again, this is ewwy.
+        if: matrix.train == 'testing'
+        run: |
+          echo version=${{needs.get-upstream-versions.outputs.testing_version}} >> $GITHUB_ENV
+          echo semver_major=${{needs.get-upstream-versions.outputs.testing_semver_major}} >> $GITHUB_ENV
+          echo semver_minor=${{needs.get-upstream-versions.outputs.testing_semver_minor}} >> $GITHUB_ENV
+          echo semver_patch=${{needs.get-upstream-versions.outputs.testing_semver_patch}} >> $GITHUB_ENV
+      
       - name: Generate CRI metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -150,16 +147,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Get target version for this train from build phase
-        uses: actions/download-artifact@v4
-        with:
-          name: ver-${{ matrix.train }}
-
-      - name: Set target version environment variables
+      - name: Set target version environment variables 
+        # Again, this is ewwy.
+        if: matrix.train == 'stable'
         run: |
-          while read p; do
-            echo $p >> $GITHUB_ENV
-          done <version.txt
+          echo version=${{needs.get-upstream-versions.outputs.stable_version}} >> $GITHUB_ENV
+          echo semver_major=${{needs.get-upstream-versions.outputs.stable_semver_major}} >> $GITHUB_ENV
+          echo semver_minor=${{needs.get-upstream-versions.outputs.stable_semver_minor}} >> $GITHUB_ENV
+          echo semver_patch=${{needs.get-upstream-versions.outputs.stable_semver_patch}} >> $GITHUB_ENV
+    
+      - name: Set target version environment variables (testing)
+        # Again, this is ewwy.
+        if: matrix.train == 'testing'
+        run: |
+          echo version=${{needs.get-upstream-versions.outputs.testing_version}} >> $GITHUB_ENV
+          echo semver_major=${{needs.get-upstream-versions.outputs.testing_semver_major}} >> $GITHUB_ENV
+          echo semver_minor=${{needs.get-upstream-versions.outputs.testing_semver_minor}} >> $GITHUB_ENV
+          echo semver_patch=${{needs.get-upstream-versions.outputs.testing_semver_patch}} >> $GITHUB_ENV
       
       - name: Create and push manifest (GHCR, stable)
         uses: Noelware/docker-manifest-action@0.4.2
