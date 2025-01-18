@@ -90,4 +90,4 @@ ENV PATH="$PATH:/app"
 
 # Finally, let's run OpenTTD!
 USER openttd
-CMD /usr/local/bin/entrypoint
+CMD [ "/usr/local/bin/entrypoint" ]
