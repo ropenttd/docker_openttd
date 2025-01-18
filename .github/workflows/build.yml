@@ -14,6 +14,7 @@ jobs:
         train:
           - stable
           - testing
+    runs-on: ubuntu-24.04
     steps:
       - name: Discover upstream version
         uses: ropenttd/cdn_version_scraper@master
