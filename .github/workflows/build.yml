@@ -10,7 +10,7 @@ on:
 jobs:
   get-upstream-versions:
     # This is a bit yucky - it feels like it should be possible to do this with a matrix.
-    runs-on: ${{ matrix.arch.os }}
+    runs-on: ubuntu-24.04
     outputs:
       stable_version: ${{steps.version-stable.outputs.version}}
       stable_semver_major: ${{steps.version-stable.outputs.semver_major}}
