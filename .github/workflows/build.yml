@@ -38,6 +38,8 @@ jobs:
           retention-days: 1
           overwrite: true
   cri:
+    needs:
+    - get-upstream-versions
     strategy:
       matrix:
         train:
@@ -113,9 +115,11 @@ jobs:
           provenance: false
 
   release-bundle-manifest:
+    needs:
+      - get-upstream-versions
+      - cri
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    needs: cri
     strategy:
       matrix:
         train:
