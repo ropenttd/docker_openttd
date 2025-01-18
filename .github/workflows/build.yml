@@ -14,7 +14,6 @@ jobs:
         train:
           - stable
           - testing
-    runs-on: ${{ matrix.arch.os }}
     steps:
       - name: Discover upstream version
         uses: ropenttd/cdn_version_scraper@master
