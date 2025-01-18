@@ -30,7 +30,7 @@ jobs:
         uses: ropenttd/cdn_version_scraper@master
         with:
           channel: testing
-        id: version-stable
+        id: version-testing
   cri:
     needs:
     - get-upstream-versions
