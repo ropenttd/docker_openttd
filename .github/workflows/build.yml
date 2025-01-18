@@ -8,6 +8,35 @@ on:
     - cron: '0 3 * * *'
 
 jobs:
+  get-upstream-versions:
+    strategy:
+      matrix:
+        train:
+          - stable
+          - testing
+    runs-on: ${{ matrix.arch.os }}
+    steps:
+      - name: Discover upstream version
+        uses: ropenttd/cdn_version_scraper@master
+        with:
+          channel: ${{ matrix.train }}
+        id: version
+
+      # The following is needed to ensure there isn't a race condition if upstream updates the version between
+      # this build workflow running, and the manifest workflow running.
+      # There is still a risk that the version returned by each matrixed architecture run is different,
+      # but that is (hopefully!) minimal.
+      - name: Dump upstream train version to file
+        shell: bash
+        run: |
+          cat $GITHUB_OUTPUT > version.txt
+      - name: Upload upstream train version information
+        uses: actions/upload-artifact@v4
+        with:
+          name: ver-${{ matrix.train }}
+          path: version.txt
+          retention-days: 1
+          overwrite: true
   cri:
     strategy:
       matrix:
@@ -23,33 +52,19 @@ jobs:
             label: linux-arm64
     runs-on: ${{ matrix.arch.os }}
     steps:
-      
       - name: Git checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: '0'
-      
-      - name: Discover upstream version
-        uses: ropenttd/cdn_version_scraper@master
-        with:
-          channel: ${{ matrix.train }}
-        id: version
 
-      # The following is needed to ensure there isn't a race condition if upstream updates the version between
-      # this build workflow running, and the manifest workflow running.
-      # There is still a risk that the version returned by each matrixed architecture run is different,
-      # but that is (hopefully!) minimal.
-      - name: Dump upstream train version to file
-        shell: bash
-        run: |
-          echo $GITHUB_OUTPUT > version.txt
-      - name: Upload upstream train version information
-        uses: actions/upload-artifact@v3
+      - name: Get target version for this train from version phase
+        uses: actions/download-artifact@v4
         with:
           name: ver-${{ matrix.train }}
-          path: version.txt
-          retention-days: 1
 
+      - name: Set target version environment variable
+        run: cat version.txt >> $GITHUB_ENV
+    
       - name: Generate CRI metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -63,34 +78,34 @@ jobs:
             org.opencontainers.image.url=https://github.com/ropenttd/docker_openttd
             org.opencontainers.image.source=https://github.com/openttd/openttd
             org.opencontainers.image.vendor=Reddit OpenTTD
-            org.opencontainers.image.version=${{ steps.version.outputs.version }}
+            org.opencontainers.image.version=${{ env.version }}
           tags: |
-            ${{ steps.version.outputs.version }}-${{ matrix.arch.label }}
+            ${{ env.version }}-${{ matrix.arch.label }}
       
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       
       - name: Login to GHCI
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
           file: ./Dockerfile
           build-args: |
-            OPENTTD_VERSION=${{ steps.version.outputs.version }}
+            OPENTTD_VERSION=${{ env.version }}
           platforms: ${{ matrix.arch.name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -125,7 +140,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get target version for this train from build phase
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: ver-${{ matrix.train }}
 
@@ -152,7 +167,7 @@ jobs:
         uses: Noelware/docker-manifest-action@0.4.2
         if: matrix.train == 'stable' && matrix.container_store == 'docker'
         with:
-          inputs: ${{env.DOCKER_REPO}}:latest,${{env.DOCKER_REPO}}:stable,${{env.DOCKER_REPO}}:${{env.version}},${{env.DOCKER_REPO}}:${{ steps.version.outputs.semver_major }}
+          inputs: ${{env.DOCKER_REPO}}:latest,${{env.DOCKER_REPO}}:stable,${{env.DOCKER_REPO}}:${{env.version}},${{env.DOCKER_REPO}}:${{ env.semver_major }}
           images: ${{env.DOCKER_REPO}}:${{env.version}}-linux-amd64,${{env.DOCKER_REPO}}:${{env.version}}-linux-arm64
           push: true
       
