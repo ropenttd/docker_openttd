@@ -30,6 +30,7 @@ jobs:
         shell: bash
         run: |
           cat $GITHUB_OUTPUT > version.txt
+          cat version.txt
       - name: Upload upstream train version information
         uses: actions/upload-artifact@v4
         with:
@@ -64,8 +65,11 @@ jobs:
         with:
           name: ver-${{ matrix.train }}
 
-      - name: Set target version environment variable
-        run: cat version.txt >> $GITHUB_ENV
+      - name: Set target version environment variables
+        run: |
+          while read p; do
+            echo $p >> $GITHUB_ENV
+          done <version.txt
     
       - name: Generate CRI metadata
         id: meta
@@ -80,9 +84,9 @@ jobs:
             org.opencontainers.image.url=https://github.com/ropenttd/docker_openttd
             org.opencontainers.image.source=https://github.com/openttd/openttd
             org.opencontainers.image.vendor=Reddit OpenTTD
-            org.opencontainers.image.version=$version
+            org.opencontainers.image.version=${{ env.version }}
           tags: |
-            $version-${{ matrix.arch.label }}
+            ${{ env.version }}-${{ matrix.arch.label }}
       
       - name: Set up Buildx
         uses: docker/setup-buildx-action@v3
@@ -107,7 +111,7 @@ jobs:
           context: .
           file: ./Dockerfile
           build-args: |
-            OPENTTD_VERSION=$version
+            OPENTTD_VERSION=${{ env.version }}
           platforms: ${{ matrix.arch.name }}
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
@@ -148,37 +152,40 @@ jobs:
         with:
           name: ver-${{ matrix.train }}
 
-      - name: Set target version environment variable
-        run: cat version.txt >> $GITHUB_ENV
+      - name: Set target version environment variables
+        run: |
+          while read p; do
+            echo $p >> $GITHUB_ENV
+          done <version.txt
       
       - name: Create and push manifest (GHCR, stable)
         uses: Noelware/docker-manifest-action@0.4.2
         if: matrix.train == 'stable' && matrix.container_store == 'ghcr'
         with:
-          inputs: ${{env.GHCR_REPO}}:latest,${{env.GHCR_REPO}}:stable,${{env.GHCR_REPO}}:$version,${{env.GHCR_REPO}}:$semver_major
-          images: ${{env.GHCR_REPO}}:$version-linux-amd64,${{env.GHCR_REPO}}:$version-linux-arm64
+          inputs: ${{env.GHCR_REPO}}:latest,${{env.GHCR_REPO}}:stable,${{env.GHCR_REPO}}:${{env.version}},${{env.GHCR_REPO}}:${{env.semver_major}}
+          images: ${{env.GHCR_REPO}}:${{env.version}}-linux-amd64,${{env.GHCR_REPO}}:${{env.version}}-linux-arm64
           push: true
       
       - name: Create and push manifest (GHCR, testing)
         uses: Noelware/docker-manifest-action@0.4.2
         if: matrix.train == 'testing' && matrix.container_store == 'ghcr'
         with:
-          inputs: ${{env.GHCR_REPO}}:testing,${{env.GHCR_REPO}}:$version
-          images: ${{env.GHCR_REPO}}:$version-linux-amd64,${{env.GHCR_REPO}}:$version-linux-arm64
+          inputs: ${{env.GHCR_REPO}}:testing,${{env.GHCR_REPO}}:${{env.version}}
+          images: ${{env.GHCR_REPO}}:${{env.version}}-linux-amd64,${{env.GHCR_REPO}}:${{env.version}}-linux-arm64
           push: true
       
       - name: Create and push manifest (Docker, stable)
         uses: Noelware/docker-manifest-action@0.4.2
         if: matrix.train == 'stable' && matrix.container_store == 'docker'
         with:
-          inputs: ${{env.DOCKER_REPO}}:latest,${{env.DOCKER_REPO}}:stable,${{env.DOCKER_REPO}}:$version,${{env.DOCKER_REPO}}:${{ env.semver_major }}
-          images: ${{env.DOCKER_REPO}}:$version-linux-amd64,${{env.DOCKER_REPO}}:$version-linux-arm64
+          inputs: ${{env.DOCKER_REPO}}:latest,${{env.DOCKER_REPO}}:stable,${{env.DOCKER_REPO}}:${{env.version}},${{env.DOCKER_REPO}}:${{ env.semver_major }}
+          images: ${{env.DOCKER_REPO}}:${{env.version}}-linux-amd64,${{env.DOCKER_REPO}}:${{env.version}}-linux-arm64
           push: true
       
       - name: Create and push manifest (Docker, testing)
         uses: Noelware/docker-manifest-action@0.4.2
         if: matrix.train == 'testing' && matrix.container_store == 'docker'
         with:
-          inputs: ${{env.DOCKER_REPO}}:testing,${{env.DOCKER_REPO}}:$version
-          images: ${{env.DOCKER_REPO}}:$version-linux-amd64,${{env.DOCKER_REPO}}:$version-linux-arm64
+          inputs: ${{env.DOCKER_REPO}}:testing,${{env.DOCKER_REPO}}:${{env.version}}
+          images: ${{env.DOCKER_REPO}}:${{env.version}}-linux-amd64,${{env.DOCKER_REPO}}:${{env.version}}-linux-arm64
           push: true
