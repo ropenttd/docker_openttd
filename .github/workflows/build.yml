@@ -29,7 +29,10 @@ jobs:
       - name: Dump upstream train version to file
         shell: bash
         run: |
-          cat $GITHUB_OUTPUT > version.txt
+          echo version=${{steps.version.outputs.version}} >> version.txt
+          echo semver_major=${{steps.version.outputs.semver_major}} > version.txt
+          echo semver_minor=${{steps.version.outputs.semver_minor}} > version.txt
+          echo semver_patch=${{steps.version.outputs.semver_patch}} > version.txt
           cat version.txt
       - name: Upload upstream train version information
         uses: actions/upload-artifact@v4
