@@ -7,6 +7,11 @@ on:
   schedule:
     - cron: '0 3 * * *'
 
+env:
+  DOCKER_REPO: reddditopenttd/openttd
+  GHCR_REPO: ghcr.io/${{ github.repository_owner }}/openttd
+
+
 jobs:
   get-upstream-versions:
     # This is a bit yucky - it feels like it should be possible to do this with a matrix.
