@@ -8,7 +8,7 @@ on:
     - cron: '0 3 * * *'
 
 env:
-  DOCKER_REPO: reddditopenttd/openttd
+  DOCKER_REPO: redditopenttd/openttd
   GHCR_REPO: ghcr.io/${{ github.repository_owner }}/openttd
 
 
