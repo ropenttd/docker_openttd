@@ -1,4 +1,4 @@
-# BUILD ENVIRONMENT
+# BUILD ENVIRONMENT
 FROM debian:stable-slim AS ottd_build
 
 ARG OPENTTD_VERSION="14.1"
@@ -32,11 +32,11 @@ RUN git clone https://github.com/OpenTTD/OpenTTD.git . \
     && git fetch --tags \
     && git checkout ${OPENTTD_VERSION}
 
-# Perform the build with the build script (1.11 switches to cmake, so use a script for decision making)
+# Perform the build with the build script (1.11 switches to cmake, so use a script for decision making)
 ADD builder.sh /usr/local/bin/builder
 RUN chmod +x /usr/local/bin/builder && builder && rm /usr/local/bin/builder
 
-# Add the latest graphics files
+# Add the latest graphics files
 ## Install OpenGFX
 RUN mkdir -p /app/data/baseset/ \
     && cd /app/data/baseset/ \
@@ -46,13 +46,12 @@ RUN mkdir -p /app/data/baseset/ \
     && rm -rf opengfx-*.tar opengfx-*.zip
 
 # END BUILD ENVIRONMENT
-# DEPLOY ENVIRONMENT
+# DEPLOY ENVIRONMENT
 
 FROM debian:stable-slim
-ARG OPENTTD_VERSION="1.10.1"
-MAINTAINER duck. <me@duck.me.uk>
+ARG OPENTTD_VERSION="14.1"
 
-# Setup the environment and install runtime dependencies
+# Setup the environment and install runtime dependencies
 RUN mkdir -p /config \
     && useradd -d /config -u 911 -s /bin/false openttd \
     && apt-get update \
@@ -61,7 +60,8 @@ RUN mkdir -p /config \
     libcurl4 \
     zlib1g \
     liblzma5 \
-    liblzo2-2
+    liblzo2-2 \
+    nano
 
 WORKDIR /config
 
